@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main page</title>
+    <link rel="stylesheet" href="/frontend/static/tailwind.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+</head>
+<body class="bg-gray-700 p-0 m-0">
+
+    <!-- Header -->
+    <div class="container mx-auto">
+        {{ template "header" . }}
+    </div>
+   <!-- Header -->
+
+   <!-- Hello -->
+   <div class="container mx-auto">
+       {{ template "hello" . }}
+   </div>
+   <!-- Hello -->
+
+    <!-- User info -->
+    <div class="container mx-auto" hx-get="/user-info" hx-trigger="load delay:1s" >
+        {{ template "user_info" . }}
+    </div>
+    <!-- User info -->
+
+   <!-- Footer -->
+   <div class="fixed bottom-0 w-full">
+    {{ template "footer" . }}
+   </div>
+   <!-- Footer -->
+</body>
+</html>
