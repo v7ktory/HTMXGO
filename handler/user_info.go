@@ -46,7 +46,7 @@ func (h *Handler) FetchUser(c *gin.Context) {
 	}
 
 	// Unmarshal the response body into a User struct
-	var user model.User
+	var user model.UserInfo
 	if err := json.Unmarshal(body, &user); err != nil {
 		handleError(c, "failed to parse response body", http.StatusInternalServerError)
 		return
