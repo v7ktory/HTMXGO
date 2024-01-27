@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main page</title>
-    <link rel="stylesheet" href="/frontend/static/tailwind.css">
+    <link rel="stylesheet" href="/ui/static/tailwind.css">
     <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
 </head>
 <body class="bg-gray-700 p-0 m-0">
@@ -33,33 +33,46 @@
     </div>
     <!-- User info -->
 
-
-
    <!-- Footer -->
    <div class="fixed bottom-0 w-full">
     {{ template "footer" . }}
    </div>
    <!-- Footer -->
 
+ 
 
    <script>
 
-document.addEventListener("DOMContentLoaded", function () {
-    const closeBtn = document.querySelector("#signup #close");
-    closeBtn.addEventListener("click", () => {
+    // Закрытие окна регистрации
+    document.addEventListener("DOMContentLoaded", function () {
+     const closeBtn = document.querySelector("#signup #close");
+        closeBtn.addEventListener("click", () => {
         document.getElementById("signup").style.visibility = "hidden";
         document.getElementById("signupBtn").style.visibility = "visible";
     });
 
-    const signupBtn = document.getElementById("signupBtn");
-    signupBtn.addEventListener("click", () => {
-        signupBtn.style.visibility = "hidden";
-        document.getElementById("signup").style.visibility = "visible";
+     const signupBtn = document.getElementById("signupBtn");
+     signupBtn.addEventListener("click", () => {
+           signupBtn.style.visibility = "hidden";
+           document.getElementById("signup").style.visibility = "visible";
+      });
     });
-});
+    document.getElementById("signup").style.visibility = "hidden";
 
-document.getElementById("signup").style.visibility = "hidden";
 
+    // Проверка почты
+    function isEmailValid(email) {
+        var emailRegex = /^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$/;
+        return emailRegex.test(email);
+    }
+    function submitForm() {
+        var emailInput = document.getElementById('email');
+        var errorMessageElement = document.getElementById('error-message');
+
+        if (!isEmailValid(emailInput.value)) {
+            errorMessageElement.textContent = 'Неверная почта';
+        }
+    };
 
    </script>
 </body>

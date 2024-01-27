@@ -9,14 +9,15 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/v7ktory/htmx+go/model"
+	"github.com/v7ktory/htmx+go/internal/model"
 )
 
 const (
 	apiURL = "https://api.api-ninjas.com/v1/randomuser"
 )
 
-func (h *Handler) FetchUser(c *gin.Context) {
+// Getting user info from ninja API
+func (h *Handler) UserInfo(c *gin.Context) {
 
 	// Create an HTTP client
 	client := &http.Client{}
@@ -28,7 +29,7 @@ func (h *Handler) FetchUser(c *gin.Context) {
 		return
 	}
 	// Add the API key to the request headers
-	req.Header.Add("X-Api-Key", os.Getenv("API"))
+	req.Header.Add("X-Api-Key", os.Getenv("API_KEY"))
 
 	// Send the request and get the response
 	response, err := client.Do(req)
@@ -47,6 +48,7 @@ func (h *Handler) FetchUser(c *gin.Context) {
 
 	// Unmarshal the response body into a User struct
 	var user model.UserInfo
+
 	if err := json.Unmarshal(body, &user); err != nil {
 		handleError(c, "failed to parse response body", http.StatusInternalServerError)
 		return
@@ -54,14 +56,14 @@ func (h *Handler) FetchUser(c *gin.Context) {
 
 	// Render the user data using a template
 	c.HTML(http.StatusOK, "user_info", gin.H{
-		"Sex":      CheckSex(user.Sex),
+		"Sex":      checkSex(user.Sex),
 		"Name":     user.Name,
 		"Email":    user.Email,
-		"Birthday": CalculateAge(user.Birthday),
+		"Birthday": calculateAge(user.Birthday),
 	})
 }
 
-func CheckSex(sex string) string {
+func checkSex(sex string) string {
 	switch sex {
 	case "M":
 		sex = "Гигачад"
@@ -73,7 +75,7 @@ func CheckSex(sex string) string {
 	return sex
 }
 
-func CalculateAge(b string) int {
+func calculateAge(b string) int {
 	yearStr := b[:4]
 
 	birthYear, err := strconv.Atoi(yearStr)
@@ -89,4 +91,29 @@ func CalculateAge(b string) int {
 	}
 
 	return age
+}
+
+// Getting user info from session
+func (h *Handler) GetUserInfo(c *gin.Context) {
+
+	// Get the session from the authorization header
+	sessionHeader := c.GetHeader("Authorization")
+
+	// Ensure the session header is not empty and in the correct format
+	if sessionHeader == "" || len(sessionHeader) < 8 || sessionHeader[:7] != "Bearer " {
+		handleError(c, "invalid session header", 400)
+		return
+	}
+
+	// Get the session id
+	sessionID := sessionHeader[7:]
+
+	// Get the user data from the session
+	user, err := h.SessionManager.GetSession(sessionID)
+	if err != nil {
+		handleError(c, "failed to get user session", 500)
+		return
+	}
+
+	c.JSON(200, user)
 }

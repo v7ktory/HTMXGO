@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Твой профиль </title>
+    <link rel="stylesheet" href="/ui/static/tailwind.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+</head>
+<body class="bg-red-400 p-0 m-0">
+    <h1 >Профиль пользователя</h1>
+    
+<div>
+    <p><strong>ID:</strong> {{ .ID}}</p>
+    <p><strong>Имя:</strong> {{ .Name}}</p>
+    <p><strong>Email:</strong> {{ .Email}}</p>
+</div>
+</body>
+</html>
