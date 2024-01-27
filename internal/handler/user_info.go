@@ -16,9 +16,8 @@ const (
 	apiURL = "https://api.api-ninjas.com/v1/randomuser"
 )
 
-// Getting user info from ninja API
+// Get the information from ninja API
 func (h *Handler) UserInfo(c *gin.Context) {
-
 	// Create an HTTP client
 	client := &http.Client{}
 
@@ -76,32 +75,22 @@ func checkSex(sex string) string {
 }
 
 func calculateAge(b string) int {
-	yearStr := b[:4]
-
-	birthYear, err := strconv.Atoi(yearStr)
-	if err != nil {
-		return 0
-	}
-
-	now := time.Now()
-	age := now.Year() - birthYear
-
-	if now.YearDay() < time.Date(now.Year(), time.January, 1, 0, 0, 0, 0, time.UTC).YearDay() {
+	year, _ := strconv.Atoi(b[:4])
+	age := time.Now().Year() - year
+	if time.Now().YearDay() < time.Date(time.Now().Year(), time.January, 1, 0, 0, 0, 0, time.UTC).YearDay() {
 		age--
 	}
-
 	return age
 }
 
-// Getting user info from session
+// Get the information from session
 func (h *Handler) GetUserInfo(c *gin.Context) {
-
 	// Get the session from the authorization header
 	sessionHeader := c.GetHeader("Authorization")
 
 	// Ensure the session header is not empty and in the correct format
 	if sessionHeader == "" || len(sessionHeader) < 8 || sessionHeader[:7] != "Bearer " {
-		handleError(c, "invalid session header", 400)
+		handleError(c, "invalid session header", http.StatusBadRequest)
 		return
 	}
 
@@ -111,9 +100,9 @@ func (h *Handler) GetUserInfo(c *gin.Context) {
 	// Get the user data from the session
 	user, err := h.SessionManager.GetSession(sessionID)
 	if err != nil {
-		handleError(c, "failed to get user session", 500)
+		handleError(c, "failed to get user session", http.StatusInternalServerError)
 		return
 	}
 
-	c.JSON(200, user)
+	c.JSON(http.StatusOK, user)
 }

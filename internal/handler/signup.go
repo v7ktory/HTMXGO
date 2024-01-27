@@ -10,32 +10,31 @@ import (
 )
 
 func (h *Handler) SignUp(c *gin.Context) {
-
 	// Get the info from the request body
 	var user model.SignupReq
 
 	// Parse request body
 	if err := c.ShouldBind(&user); err != nil {
-		handleError(c, "failed to parse request body", 400)
+		handleError(c, "failed to parse request body", http.StatusBadRequest)
 		return
 	}
 
 	// Validate the user struct
 	validate := validator.New()
 	if err := validate.Struct(user); err != nil {
-		handleError(c, "failed to validate user", 400)
+		handleError(c, "failed to validate user", http.StatusBadRequest)
 		return
 	}
 
 	if !validation.IsEmailValid(user.Email) {
-		handleError(c, "invalid email", 400)
+		handleError(c, "invalid email", http.StatusBadRequest)
 		return
 	}
 
 	// Create the user
 	u, err := h.Service.Signup(user.Name, user.Email, user.Password)
 	if err != nil {
-		handleError(c, "failed to create user", 500)
+		handleError(c, "failed to create user", http.StatusInternalServerError)
 		return
 	}
 
@@ -46,12 +45,11 @@ func (h *Handler) SignUp(c *gin.Context) {
 		Email: user.Email,
 	})
 	if err != nil {
-		handleError(c, "failed to generate session", 500)
+		handleError(c, "failed to generate session", http.StatusInternalServerError)
 		return
 	}
 
 	c.SetCookie("sessionID", sessionID, 3600, "/", "", false, true)
 	c.Header("HX-Redirect", "/profile")
-
 	c.Status(http.StatusCreated)
 }

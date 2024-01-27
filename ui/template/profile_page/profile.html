@@ -7,13 +7,26 @@
     <link rel="stylesheet" href="/ui/static/tailwind.css">
     <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
 </head>
-<body class="bg-red-400 p-0 m-0">
-    <h1 >Профиль пользователя</h1>
+<body class="bg-gray-700 p-0 m-0">
     
-<div>
-    <p><strong>ID:</strong> {{ .ID}}</p>
-    <p><strong>Имя:</strong> {{ .Name}}</p>
-    <p><strong>Email:</strong> {{ .Email}}</p>
+   <!-- Header -->
+   <div class="container mx-auto">
+        {{ template "profile_header" . }}
+   </div>
+   <!-- Header -->
+
+   <!-- Post -->
+   <div class="container mx-auto">
+    {{ template "profile_post" . }}
+   </div>
+   <!-- Post -->
+
+  <!-- Footer -->
+  <div class="fixed bottom-0 w-full">
+    {{ template "profile_footer" . }}
+   </div>
+   <!-- Footer -->
+   
 </div>
 </body>
 </html>

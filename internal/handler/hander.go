@@ -20,7 +20,6 @@ func NewHandler(sessionManager *session.SessionManager, service *service.Service
 	}
 }
 func (h *Handler) InitRoute() *gin.Engine {
-
 	router := gin.Default()
 	router.Static("./ui/static", "./ui/static")
 	router.Static("./ui/img", "./ui/img")

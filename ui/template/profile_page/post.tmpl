@@ -1,0 +1,23 @@
+{{ define "profile_post" }}
+
+<div class="container mx-auto mt-2 bg-gray-800 rounded-xl text-white p-8">
+    <h2 class="text-3xl font-bold mb-6 text-center">Создай TODO</h2>
+    
+    <form class="flex flex-col space-y-4 size-96 mx-auto text-center bg-gray-700 rounded-xl">
+        <div class="mt-5">
+            <label class="text-lg font-medium text-white">Название</label>
+            <input type="text" class="mt-1 p-2 w-80 border rounded-md text-gray-800" required maxlength="50">
+        </div>
+
+        <div>
+            <label class="text-lg font-medium text-white">Описание</label>
+            <textarea rows="4" class="mt-1 p-2 w-80 border rounded-md text-gray-800" required maxlength="255"></textarea>
+        </div>
+
+        <div>
+            <button class="bg-blue-800 hover:bg-blue-700 py-2 px-4 mt-4 rounded transition duration-300 ease-in-out">Добавить TODO</button>
+        </div>
+    </form>
+</div>
+
+{{ end }}

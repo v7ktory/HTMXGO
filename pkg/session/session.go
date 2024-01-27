@@ -21,10 +21,10 @@ func NewSessionManager(rdb *redis.Client) *SessionManager {
 }
 
 func (s *SessionManager) GenerateSession(data model.UserSession) (string, error) {
-
 	sessionID := uuid.NewString()
 	jsonData, _ := json.Marshal(data)
-	err := s.Rdb.Set(context.Background(), sessionID, string(jsonData), 24*time.Hour).Err()
+	ctx := context.Background()
+	err := s.Rdb.Set(ctx, sessionID, string(jsonData), 24*time.Hour).Err()
 	if err != nil {
 		return "", err
 	}
@@ -32,18 +32,15 @@ func (s *SessionManager) GenerateSession(data model.UserSession) (string, error)
 }
 
 func (s *SessionManager) GetSession(session string) (*model.UserSession, error) {
-
 	data, err := s.Rdb.Get(context.Background(), session).Result()
 	if err != nil {
 		return nil, err
 	}
 
 	var userSession model.UserSession
-	err = json.Unmarshal([]byte(data), &userSession)
-	if err != nil {
+	if err := json.Unmarshal([]byte(data), &userSession); err != nil {
 		return nil, err
 	}
 
 	return &userSession, nil
-
 }

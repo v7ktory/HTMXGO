@@ -8,10 +8,9 @@ import (
 )
 
 func (h *Handler) UserProfile(c *gin.Context) {
-
 	userSession := c.MustGet("userSession").(*model.UserSession)
 
-	// Отображение страницы профиля пользователя
+	// Render the profile template
 	c.HTML(http.StatusOK, "profile.html", gin.H{
 		"ID":    userSession.ID,
 		"Name":  userSession.Name,

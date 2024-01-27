@@ -1,0 +1,13 @@
+{{ define "profile_header" }}
+
+<header class="bg-gray-900 text-white p-4 rounded-2xl container flex items-center justify-between">
+    <div>
+        <h2 class="text-xl font-semibold italic animate-pulse-slow">{{ .Name }}</h2>
+    </div>
+    <div class="flex items-center space-x-4">
+        <a href="#" id="profileBtn" class="hover:text-gray-300">Мой профиль</a>
+        <a href="#" id="signoutBtn" class="bg-blue-800 text-white hover:bg-blue-700 py-2 px-4 rounded-full transition duration-300">Выйти</a>
+    </div>
+</header>
+
+{{ end }}
