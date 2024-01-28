@@ -16,10 +16,16 @@
    <!-- Header -->
 
    <!-- Signup -->
-    <div class="container size-72 absolute right-48">
+    <div id="signup" class="container size-72 absolute right-48 z-0">
         {{ template "signup" . }}
     </div>
    <!-- Signup -->
+
+     <!-- Login -->
+     <div id="login" class="container size-72 absolute right-48 z-0">
+        {{ template "login" . }}
+    </div>
+   <!-- Login -->
 
    <!-- Hello -->
    <div class="container mx-auto">
@@ -39,39 +45,7 @@
    </div>
    <!-- Footer -->
 
-   <script>
-
-    // Закрытие окна регистрации
-    document.addEventListener("DOMContentLoaded", function () {
-     const closeBtn = document.querySelector("#signup #close");
-        closeBtn.addEventListener("click", () => {
-        document.getElementById("signup").style.visibility = "hidden";
-        document.getElementById("signupBtn").style.visibility = "visible";
-    });
-
-     const signupBtn = document.getElementById("signupBtn");
-     signupBtn.addEventListener("click", () => {
-           signupBtn.style.visibility = "hidden";
-           document.getElementById("signup").style.visibility = "visible";
-      });
-    });
-    document.getElementById("signup").style.visibility = "hidden";
-
-
-    // Проверка почты
-    function isEmailValid(email) {
-        var emailRegex = /^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$/;
-        return emailRegex.test(email);
-    }
-    function submitForm() {
-        var emailInput = document.getElementById('email');
-        var errorMessageElement = document.getElementById('error-message');
-
-        if (!isEmailValid(emailInput.value)) {
-            errorMessageElement.textContent = 'Неверная почта';
-        }
-    };
-
-   </script>
+   <script src="/ui/static/validation.js"></script>
+   <script src="/ui/static/close.js"></script>
 </body>
 </html>

@@ -1,0 +1,21 @@
+{{ define "login" }}
+
+<div class="container mt-2 bg-gray-900 rounded-xl text-white p-4">
+    <form hx-post="/auth/login" hx-trigger="submit" onsubmit="return checkLogin()">
+
+        <h1 id="loginBtn" class="text-2xl text-center">Вход</h1>
+
+        <label for="loginEmail" class="block mt-2">Электронная почта:</label>
+        <input type="email" id="loginEmail" name="loginEmail" class="w-full p-2 border rounded mt-1  text-gray-800" required placeholder="Твоя почта">
+
+        <div id="login-error-message" class="text-red-500 mt-2"></div>
+
+        <label for="loginPassword" class="block mt-2">Пароль:</label>
+        <input type="loginPassword" name="loginPassword" class="w-full p-2 border rounded mt-1  text-gray-800" minlength="6" required placeholder="Минимум 6 символов">
+
+        <button type="submit" class="mt-4 bg-blue-800 text-white hover:bg-blue-700 py-2 px-4 rounded-full transition duration-300 w-full">Войти</button>
+    </form>
+    <button id="login-close" class="absolute top-2 right-2 text-gray-400">x</button>
+</div>
+
+{{ end }}
