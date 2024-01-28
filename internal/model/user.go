@@ -19,7 +19,7 @@ type SignupReq struct {
 	Password string `form:"password"`
 }
 
-type SignInReq struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+type LoginReq struct {
+	Email    string `form:"email"`
+	Password string `form:"password"`
 }

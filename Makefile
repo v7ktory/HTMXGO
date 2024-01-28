@@ -6,6 +6,6 @@ run:
 stop: 
 	docker-compose down -v
 up:
-	migrate -path ./schema -database 'postgresql://postgres:qwerty@localhost:5432/postgres?sslmode=disable' up
+	migrate -path ./migration -database 'postgresql://postgres:qwerty@localhost:5432/postgres?sslmode=disable' up
 down:
-	migrate -path ./schema -database 'postgresql://postgres:qwerty@localhost:5432/postgres?sslmode=disable' down
+	migrate -path ./migration -database 'postgresql://postgres:qwerty@localhost:5432/postgres?sslmode=disable' down

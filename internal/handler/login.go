@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +9,7 @@ import (
 )
 
 func (h *Handler) Login(c *gin.Context) {
-	var user model.SignInReq
+	var user model.LoginReq
 
 	// Parse request body
 	if err := c.ShouldBind(&user); err != nil {
@@ -28,12 +27,11 @@ func (h *Handler) Login(c *gin.Context) {
 	// Login the user
 	sessionID, err := h.Service.Login(user.Email, user.Password)
 	if err != nil {
-		handleError(c, "failed to sign in", http.StatusInternalServerError)
+		handleError(c, "failed to login", http.StatusInternalServerError)
 		return
 	}
 
-	// Set the session id as a header
-	c.Writer.Header().Set("Authorization", fmt.Sprintf("Bearer %s", sessionID))
-
-	c.JSON(200, gin.H{"success": true})
+	c.SetCookie("sessionID", sessionID, 3600, "/", "", false, true)
+	c.Header("HX-Redirect", "/profile")
+	c.Status(http.StatusOK)
 }
