@@ -27,7 +27,7 @@ func (h *Handler) Login(c *gin.Context) {
 	// Login the user
 	sessionID, err := h.Service.Login(user.Email, user.Password)
 	if err != nil {
-		handleError(c, "failed to login", http.StatusInternalServerError)
+		handleError(c, "failed to login", http.StatusBadRequest)
 		return
 	}
 

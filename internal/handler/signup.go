@@ -27,14 +27,14 @@ func (h *Handler) SignUp(c *gin.Context) {
 	}
 
 	if !validation.IsEmailValid(user.Email) {
-		handleError(c, "invalid email", http.StatusBadRequest)
+		handleError(c, "Неверная почта", http.StatusBadRequest)
 		return
 	}
 
 	// Create the user
 	u, err := h.Service.Signup(user.Name, user.Email, user.Password)
 	if err != nil {
-		handleError(c, "failed to create user", http.StatusInternalServerError)
+		handleError(c, "Почта уже используется", http.StatusBadRequest)
 		return
 	}
 
