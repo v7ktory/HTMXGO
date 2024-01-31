@@ -1,5 +1,6 @@
 function deleteDefaultError() {
     setTimeout(function() {
-        document.getElementById('default-error').innerHTML = ''; 
+        document.getElementById('signup-default-error').innerHTML = ''; 
+        document.getElementById('login-default-error').innerHTML = ''; 
     }, 2000);
 }

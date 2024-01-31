@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
 	"github.com/v7ktory/htmx+go/internal/model"
+	"github.com/v7ktory/htmx+go/pkg/validation"
 )
 
 func (h *Handler) Login(c *gin.Context) {
@@ -24,14 +25,23 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
+	if !validation.IsEmailValid(user.Email) {
+		handleError(c, "Неверная почта", http.StatusBadRequest)
+		return
+	}
+
+	usr := model.User{
+		Email:    user.Email,
+		Password: user.Password,
+	}
 	// Login the user
-	sessionID, err := h.Service.Login(user.Email, user.Password)
+	sessionID, err := h.Service.Login(c, &usr)
 	if err != nil {
-		handleError(c, "failed to login", http.StatusBadRequest)
+		handleError(c, "Неверная почта или пароль", http.StatusBadRequest)
 		return
 	}
 
 	c.SetCookie("sessionID", sessionID, 3600, "/", "", false, true)
-	c.Header("HX-Redirect", "/profile")
+	c.Header("HX-Redirect", "/profile/my")
 	c.Status(http.StatusOK)
 }

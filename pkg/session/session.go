@@ -3,6 +3,7 @@ package session
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,20 +27,20 @@ func (s *SessionManager) GenerateSession(data model.UserSession) (string, error)
 	ctx := context.Background()
 	err := s.Rdb.Set(ctx, sessionID, string(jsonData), 24*time.Hour).Err()
 	if err != nil {
-		return "", err
+		log.Println("Error setting session:", err)
 	}
 	return sessionID, nil
 }
 
-func (s *SessionManager) GetSession(session string) (*model.UserSession, error) {
-	data, err := s.Rdb.Get(context.Background(), session).Result()
+func (s *SessionManager) GetSession(sessionID string) (*model.UserSession, error) {
+	data, err := s.Rdb.Get(context.Background(), sessionID).Result()
 	if err != nil {
-		return nil, err
+		log.Println("Error getting session:", err)
 	}
 
 	var userSession model.UserSession
 	if err := json.Unmarshal([]byte(data), &userSession); err != nil {
-		return nil, err
+		log.Println("Error unmarshaling session:", err)
 	}
 
 	return &userSession, nil

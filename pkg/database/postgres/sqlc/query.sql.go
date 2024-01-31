@@ -7,7 +7,45 @@ package postgresdb
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const createTodo = `-- name: CreateTodo :one
+INSERT INTO todos (
+  title, description, completed, created_at, user_id
+) VALUES (
+  $1, $2, $3, $4, $5
+) RETURNING id, title, description, completed, created_at, user_id
+`
+
+type CreateTodoParams struct {
+	Title       string
+	Description pgtype.Text
+	Completed   pgtype.Bool
+	CreatedAt   pgtype.Timestamp
+	UserID      int32
+}
+
+func (q *Queries) CreateTodo(ctx context.Context, arg CreateTodoParams) (Todo, error) {
+	row := q.db.QueryRow(ctx, createTodo,
+		arg.Title,
+		arg.Description,
+		arg.Completed,
+		arg.CreatedAt,
+		arg.UserID,
+	)
+	var i Todo
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Description,
+		&i.Completed,
+		&i.CreatedAt,
+		&i.UserID,
+	)
+	return i, err
+}
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
@@ -35,14 +73,62 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
-const deleteUsers = `-- name: DeleteUsers :exec
+const deleteTodo = `-- name: DeleteTodo :exec
+DELETE FROM todos
+WHERE id = $1
+`
+
+func (q *Queries) DeleteTodo(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteTodo, id)
+	return err
+}
+
+const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM users
 WHERE id = $1
 `
 
-func (q *Queries) DeleteUsers(ctx context.Context, id int32) error {
-	_, err := q.db.Exec(ctx, deleteUsers, id)
+func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteUser, id)
 	return err
+}
+
+const getTodos = `-- name: GetTodos :many
+SELECT title, description, completed, created_at
+FROM todos
+WHERE user_id = $1
+`
+
+type GetTodosRow struct {
+	Title       string
+	Description pgtype.Text
+	Completed   pgtype.Bool
+	CreatedAt   pgtype.Timestamp
+}
+
+func (q *Queries) GetTodos(ctx context.Context, userID int32) ([]GetTodosRow, error) {
+	rows, err := q.db.Query(ctx, getTodos, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTodosRow
+	for rows.Next() {
+		var i GetTodosRow
+		if err := rows.Scan(
+			&i.Title,
+			&i.Description,
+			&i.Completed,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getUser = `-- name: GetUser :one
@@ -62,13 +148,41 @@ func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {
 	return i, err
 }
 
-const updateUser = `-- name: UpdateUser :exec
-UPDATE users
-  set name = $1
+const updateTodo = `-- name: UpdateTodo :exec
+UPDATE todos
+  SET title = $2, description = $3, completed = $4
 WHERE id = $1
 `
 
-func (q *Queries) UpdateUser(ctx context.Context, name string) error {
-	_, err := q.db.Exec(ctx, updateUser, name)
+type UpdateTodoParams struct {
+	ID          int32
+	Title       string
+	Description pgtype.Text
+	Completed   pgtype.Bool
+}
+
+func (q *Queries) UpdateTodo(ctx context.Context, arg UpdateTodoParams) error {
+	_, err := q.db.Exec(ctx, updateTodo,
+		arg.ID,
+		arg.Title,
+		arg.Description,
+		arg.Completed,
+	)
+	return err
+}
+
+const updateUser = `-- name: UpdateUser :exec
+UPDATE users
+  SET name = $2
+WHERE id = $1
+`
+
+type UpdateUserParams struct {
+	ID   int32
+	Name string
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
+	_, err := q.db.Exec(ctx, updateUser, arg.ID, arg.Name)
 	return err
 }

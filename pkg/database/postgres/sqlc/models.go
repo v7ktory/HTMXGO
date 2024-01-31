@@ -4,7 +4,18 @@
 
 package postgresdb
 
-import ()
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+)
+
+type Todo struct {
+	ID          int32
+	Title       string
+	Description pgtype.Text
+	Completed   pgtype.Bool
+	CreatedAt   pgtype.Timestamp
+	UserID      int32
+}
 
 type User struct {
 	ID       int32

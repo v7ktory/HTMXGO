@@ -3,8 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"errors"
-	"fmt"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,68 +25,66 @@ func NewAuthService(Rdb *redis.Client, Pdb *postgresdb.Queries) *AuthService {
 	}
 }
 
-func (s *AuthService) Signup(name, email, password string) (postgresdb.User, error) {
+func (s *AuthService) Signup(ctx context.Context, user *model.User) (postgresdb.User, error) {
 	// Hash the password for security
-	hashedPassword, err := hash.HashPassword(password)
+	hashedPassword, err := hash.HashPassword(user.Password)
 	if err != nil {
-		return postgresdb.User{}, fmt.Errorf("failed to hash password: %v", err)
+		log.Printf("Error hashing password: %v\n", err)
 	}
 
 	// Create a new user in the database
 	u, err := s.Pdb.CreateUser(context.Background(), postgresdb.CreateUserParams{
-		Name:     name,
-		Email:    email,
+		Name:     user.Name,
+		Email:    user.Email,
 		Password: hashedPassword,
 	})
 	if err != nil {
-		return postgresdb.User{}, fmt.Errorf("failed to create user: %v", err)
+		log.Println("Error creating user:", err)
 	}
 
 	return u, nil
 }
 
-func (s *AuthService) Login(email, password string) (string, error) {
+func (s *AuthService) Login(ctx context.Context, user *model.User) (string, error) {
 	// Retrieve user from the database
-	user, err := s.Pdb.GetUser(context.Background(), email)
+	u, err := s.Pdb.GetUser(context.Background(), user.Email)
 	if err != nil {
-		return "", err
+		log.Println("Error getting user:", err)
 	}
 
 	// Check if the provided password matches the user's password
-	if !hash.CheckPasswordHash(password, user.Password) {
-		return "", errors.New("invalid password")
+	if !hash.CheckPasswordHash(user.Password, u.Password) {
+		log.Println("Error checking password:", err)
 	}
 
 	// Generate a new session ID
 	sessionID := uuid.NewString()
 	// Create a user session object
 	userSession := model.UserSession{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
+		ID:    u.ID,
+		Name:  u.Name,
+		Email: u.Email,
 	}
 	// Marshal user session object to JSON
 	jsonData, err := json.Marshal(userSession)
 	if err != nil {
-		return "", err
+		log.Println("Error marshaling object:", err)
 	}
 
 	// Set the user session in the Redis database with a 24-hour expiration
 	err = s.Rdb.Set(context.Background(), sessionID, string(jsonData), 24*time.Hour).Err()
 	if err != nil {
-		return "", err
+		log.Println("Error setting session:", err)
 	}
 
 	// Return the generated session ID
 	return sessionID, nil
 }
-func (s *AuthService) SignOut(sessionID string) error {
-	ctx := context.Background()
-
+func (s *AuthService) SignOut(ctx context.Context, sessionID string) error {
 	// Delete the session with the given session ID from the Redis database.
 	err := s.Rdb.Del(ctx, sessionID).Err()
 	if err != nil {
-		return fmt.Errorf("failed to revoke session: %w", err)
+		log.Println("Error deleting session:", err)
 	}
 
 	return nil

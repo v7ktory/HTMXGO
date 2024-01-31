@@ -34,10 +34,16 @@ func (h *Handler) InitRoute() *gin.Engine {
 	{
 		auth.POST("/signup", h.SignUp)
 		auth.POST("/login", h.Login)
+		auth.POST("/signout", h.SignOut)
 	}
 
-	authenticated := router.Use(h.AuthMiddleware())
-	authenticated.GET("/profile/", h.UserProfile)
+	authenticated := router.Group("/profile", h.AuthMiddleware())
+	{
+		authenticated.GET("/my", h.UserProfile)
+		authenticated.GET("/info", h.GetUserInfo)
+		authenticated.POST("/add-todo", h.AddTodo)
+	}
+
 	return router
 }
 

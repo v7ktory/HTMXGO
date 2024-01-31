@@ -1,6 +1,15 @@
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY UNIQUE,
     name VARCHAR(100) NOT NULL, 
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE todos (
+    id SERIAL PRIMARY KEY UNIQUE,
+    title VARCHAR(50) NOT NULL,
+    description VARCHAR(150),
+    completed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL,
+    user_id SERIAL NOT NULL REFERENCES users(id) ON DELETE CASCADE
 );

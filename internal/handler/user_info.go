@@ -85,17 +85,12 @@ func calculateAge(b string) int {
 
 // Get the information from session
 func (h *Handler) GetUserInfo(c *gin.Context) {
-	// Get the session from the authorization header
-	sessionHeader := c.GetHeader("Authorization")
-
-	// Ensure the session header is not empty and in the correct format
-	if sessionHeader == "" || len(sessionHeader) < 8 || sessionHeader[:7] != "Bearer " {
-		handleError(c, "invalid session header", http.StatusBadRequest)
+	// Get the sessionID from the cookie
+	sessionID, err := c.Cookie("sessionID")
+	if err != nil || sessionID == "" {
+		handleError(c, "invalid or missing session cookie", http.StatusBadRequest)
 		return
 	}
-
-	// Get the session id
-	sessionID := sessionHeader[7:]
 
 	// Get the user data from the session
 	user, err := h.SessionManager.GetSession(sessionID)

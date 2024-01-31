@@ -31,8 +31,13 @@ func (h *Handler) SignUp(c *gin.Context) {
 		return
 	}
 
+	usr := model.User{
+		Name:     user.Name,
+		Email:    user.Email,
+		Password: user.Password,
+	}
 	// Create the user
-	u, err := h.Service.Signup(user.Name, user.Email, user.Password)
+	u, err := h.Service.Signup(c, &usr)
 	if err != nil {
 		handleError(c, "Почта уже используется", http.StatusBadRequest)
 		return
@@ -50,6 +55,6 @@ func (h *Handler) SignUp(c *gin.Context) {
 	}
 
 	c.SetCookie("sessionID", sessionID, 3600, "/", "", false, true)
-	c.Header("HX-Redirect", "/profile")
+	c.Header("HX-Redirect", "/profile/my")
 	c.Status(http.StatusCreated)
 }
