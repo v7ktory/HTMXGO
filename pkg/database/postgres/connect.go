@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -20,7 +21,8 @@ func NewPostgresDB(cfg Config) (*pgxpool.Pool, error) {
 	pool, err := pgxpool.New(context.Background(), fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		cfg.Host, cfg.Port, cfg.User, cfg.DBName, cfg.Password, cfg.SSLMode))
 	if err != nil {
-		return nil, fmt.Errorf("pgx connection error: %w", err)
+		log.Println("Error connecting to postgres:", err)
+		return nil, err
 	}
 	return pool, nil
 }

@@ -34,10 +34,11 @@ func (h *Handler) AddTodo(c *gin.Context) {
 		return
 	}
 
-	if err := h.Service.CreateTodo(todo.Title, todo.Description, e.Email); err != nil {
+	if err := h.Service.CreateTodo(c, todo.Title, todo.Description, e.Email); err != nil {
 		handleError(c, "failed to create todo", http.StatusBadRequest)
 		return
 	}
 
+	c.Header("HX-Refresh", "true")
 	c.Status(http.StatusCreated)
 }

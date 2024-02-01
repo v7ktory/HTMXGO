@@ -17,16 +17,21 @@
 
    <!-- Post -->
    <div class="container mx-auto">
-    {{ template "profile_post" . }}
+    {{ template "profile_todo" . }}
    </div>
    <!-- Post -->
 
+ <!-- Info -->
+   <div class="container mx-auto mb-20" hx-get="/profile/todo-info" hx-trigger="load delay:0s">
+    {{ template "profile_todo_info" . }}
+   </div>
+   <!-- Info -->
+
   <!-- Footer -->
-  <div class="fixed bottom-0 w-full">
+  <div class="fixed bottom-0 w-full h-20">
     {{ template "profile_footer" . }}
    </div>
    <!-- Footer -->
-   
-</div>
+   <script src="/ui/static/todo.js"></script>
 </body>
 </html>

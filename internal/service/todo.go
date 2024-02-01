@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/v7ktory/htmx+go/internal/model"
 	postgresdb "github.com/v7ktory/htmx+go/pkg/database/postgres/sqlc"
 )
 
@@ -19,10 +20,11 @@ func NewTodoService(Pdb *postgresdb.Queries) *TodoService {
 	}
 }
 
-func (s *TodoService) CreateTodo(title, description, email string) error {
-	user, err := s.Pdb.GetUser(context.Background(), email)
+func (s *TodoService) CreateTodo(ctx context.Context, title, description, email string) error {
+	user, err := s.Pdb.GetUser(ctx, email)
 	if err != nil {
 		log.Println("Error getting user:", err)
+		return err
 	}
 
 	todo := postgresdb.CreateTodoParams{
@@ -33,9 +35,40 @@ func (s *TodoService) CreateTodo(title, description, email string) error {
 		UserID:      user.ID,
 	}
 
-	if _, err := s.Pdb.CreateTodo(context.Background(), todo); err != nil {
+	if _, err := s.Pdb.CreateTodo(ctx, todo); err != nil {
 		log.Println("Error creating todo:", err)
+		return err
 	}
 
+	return nil
+}
+
+func (s *TodoService) GetTodos(ctx context.Context, id int32) ([]model.Todo, error) {
+	todosDB, err := s.Pdb.GetTodos(ctx, id)
+	if err != nil {
+		log.Println("Error getting todos:", err)
+		return nil, err
+	}
+
+	var todos []model.Todo
+	for _, t := range todosDB {
+		todo := model.Todo{
+			Title:       t.Title,
+			Description: t.Description.String,
+			Completed:   t.Completed.Bool,
+			CreatedAt:   t.CreatedAt.Time,
+		}
+		todos = append(todos, todo)
+	}
+
+	return todos, nil
+}
+
+func (s *TodoService) DeleteTodo(ctx context.Context, id int32) error {
+	err := s.Pdb.DeleteTodo(ctx, id)
+	if err != nil {
+		log.Println("Error deleting todo:", err)
+		return err
+	}
 	return nil
 }

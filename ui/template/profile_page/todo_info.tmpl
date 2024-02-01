@@ -1,0 +1,28 @@
+{{ define "profile_todo_info" }}
+
+<div class="container mx-auto mt-2 bg-gray-800 rounded-xl text-white p-8">
+    <h2 class="text-3xl font-bold mb-6 text-center">Мои TODO</h2>
+
+    <ul hx-confirm="Are you sure?" hx-target="closest li" hx-swap="outerHTML swap:1s" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-x-6 gap-y-3">
+        {{ range .Titles }}
+        <li id="todo{{ . }}" class="border border-gray-600 p-4 rounded-lg shadow-md flex flex-col transition duration-300 
+        ease-in-out transform hover:scale-105 hover:bg-gray-700 cursor-default relative">
+
+            <p class="ml-20">TODO: {{ . }}</p>
+            <div class="absolute left-0.5 z-10">
+                <button id="done" class="border hover:bg-green-600 transition duration-300 
+                ease-in-out border-green-600 px-4 rounded-lg shadow-md">Done</button>
+            </div>
+            <div class="absolute right-5 z-10">
+                <button hx-delete="/profile/delete-todo/:id" class="border hover:bg-red-600 transition duration-300 ease-in-out
+                 border-red-600 px-4 rounded-lg shadow-md">Delete</button>
+            </div>
+        </li>
+        {{ end }}
+    </ul>
+
+</div>
+
+{{ end }}
+
+

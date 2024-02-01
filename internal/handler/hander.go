@@ -42,6 +42,8 @@ func (h *Handler) InitRoute() *gin.Engine {
 		authenticated.GET("/my", h.UserProfile)
 		authenticated.GET("/info", h.GetUserInfo)
 		authenticated.POST("/add-todo", h.AddTodo)
+		authenticated.GET("/todo-info", h.GetTodos)
+		authenticated.DELETE("/delete-todo/:id", h.DeleteTodo)
 	}
 
 	return router

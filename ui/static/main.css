@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.strikethrough p {
+  text-decoration: line-through;
+}
+li.htmx-swapping ul {
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}

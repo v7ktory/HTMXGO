@@ -30,6 +30,7 @@ func (s *AuthService) Signup(ctx context.Context, user *model.User) (postgresdb.
 	hashedPassword, err := hash.HashPassword(user.Password)
 	if err != nil {
 		log.Printf("Error hashing password: %v\n", err)
+		return postgresdb.User{}, err
 	}
 
 	// Create a new user in the database
@@ -40,6 +41,7 @@ func (s *AuthService) Signup(ctx context.Context, user *model.User) (postgresdb.
 	})
 	if err != nil {
 		log.Println("Error creating user:", err)
+		return postgresdb.User{}, err
 	}
 
 	return u, nil
@@ -50,11 +52,13 @@ func (s *AuthService) Login(ctx context.Context, user *model.User) (string, erro
 	u, err := s.Pdb.GetUser(context.Background(), user.Email)
 	if err != nil {
 		log.Println("Error getting user:", err)
+		return "", err
 	}
 
 	// Check if the provided password matches the user's password
 	if !hash.CheckPasswordHash(user.Password, u.Password) {
 		log.Println("Error checking password:", err)
+		return "", err
 	}
 
 	// Generate a new session ID
@@ -69,12 +73,14 @@ func (s *AuthService) Login(ctx context.Context, user *model.User) (string, erro
 	jsonData, err := json.Marshal(userSession)
 	if err != nil {
 		log.Println("Error marshaling object:", err)
+		return "", err
 	}
 
 	// Set the user session in the Redis database with a 24-hour expiration
 	err = s.Rdb.Set(context.Background(), sessionID, string(jsonData), 24*time.Hour).Err()
 	if err != nil {
 		log.Println("Error setting session:", err)
+		return "", err
 	}
 
 	// Return the generated session ID
@@ -85,6 +91,7 @@ func (s *AuthService) SignOut(ctx context.Context, sessionID string) error {
 	err := s.Rdb.Del(ctx, sessionID).Err()
 	if err != nil {
 		log.Println("Error deleting session:", err)
+		return err
 	}
 
 	return nil
