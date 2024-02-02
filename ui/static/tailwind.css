@@ -594,6 +594,14 @@ video {
   bottom: 0px;
 }
 
+.left-0 {
+  left: 0px;
+}
+
+.left-0\.5 {
+  left: 0.125rem;
+}
+
 .right-2 {
   right: 0.5rem;
 }
@@ -608,14 +616,6 @@ video {
 
 .top-2 {
   top: 0.5rem;
-}
-
-.left-0 {
-  left: 0px;
-}
-
-.left-0\.5 {
-  left: 0.125rem;
 }
 
 .z-0 {
