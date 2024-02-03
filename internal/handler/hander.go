@@ -43,6 +43,7 @@ func (h *Handler) InitRoute() *gin.Engine {
 		authenticated.GET("/info", h.GetUserInfo)
 		authenticated.POST("/add-todo", h.AddTodo)
 		authenticated.GET("/todo-info", h.GetTodos)
+		authenticated.PATCH("/update-todo/:id", h.UpdateTodo)
 		authenticated.DELETE("/delete-todo/:id", h.DeleteTodo)
 	}
 

@@ -177,24 +177,18 @@ func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {
 
 const updateTodo = `-- name: UpdateTodo :exec
 UPDATE todos
-  SET title = $2, description = $3, completed = $4
-WHERE id = $1
+  SET completed = $3
+WHERE id = $1 AND user_id = $2
 `
 
 type UpdateTodoParams struct {
-	ID          int32
-	Title       string
-	Description pgtype.Text
-	Completed   pgtype.Bool
+	ID        int32
+	UserID    int32
+	Completed pgtype.Bool
 }
 
 func (q *Queries) UpdateTodo(ctx context.Context, arg UpdateTodoParams) error {
-	_, err := q.db.Exec(ctx, updateTodo,
-		arg.ID,
-		arg.Title,
-		arg.Description,
-		arg.Completed,
-	)
+	_, err := q.db.Exec(ctx, updateTodo, arg.ID, arg.UserID, arg.Completed)
 	return err
 }
 

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"log"
 	"time"
 
@@ -57,8 +58,8 @@ func (s *AuthService) Login(ctx context.Context, user *model.User) (string, erro
 
 	// Check if the provided password matches the user's password
 	if !hash.CheckPasswordHash(user.Password, u.Password) {
-		log.Println("Error checking password:", err)
-		return "", err
+		log.Println("Password does not match")
+		return "", errors.New("invalid password")
 	}
 
 	// Generate a new session ID

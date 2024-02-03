@@ -31,8 +31,9 @@ func (h *Handler) GetTodos(c *gin.Context) {
 	var todoInfo []model.TodoInfo
 	for _, t := range todos {
 		TodoInfo := model.TodoInfo{
-			ID:    t.ID,
-			Title: t.Title,
+			ID:        t.ID,
+			Title:     t.Title,
+			Completed: t.Completed,
 		}
 		todoInfo = append(todoInfo, TodoInfo)
 	}
@@ -74,6 +75,28 @@ func (h *Handler) AddTodo(c *gin.Context) {
 
 	c.Header("HX-Refresh", "true")
 	c.Status(http.StatusCreated)
+}
+func (h *Handler) UpdateTodo(c *gin.Context) {
+	cookie, err := c.Cookie("sessionID")
+	if err != nil {
+		handleError(c, "failed to get session", http.StatusBadRequest)
+		return
+	}
+
+	s, err := h.SessionManager.GetSession(c, cookie)
+	if err != nil {
+		handleError(c, "failed to get session", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		handleError(c, "failed to parse id", http.StatusBadRequest)
+		return
+	}
+	h.Service.UpdateTodo(c, s.ID, int32(id))
+
+	c.Status(http.StatusOK)
 }
 
 func (h *Handler) DeleteTodo(c *gin.Context) {

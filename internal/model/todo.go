@@ -16,6 +16,7 @@ type TodoReq struct {
 }
 
 type TodoInfo struct {
-	ID    int32
-	Title string
+	ID        int32
+	Title     string
+	Completed bool
 }

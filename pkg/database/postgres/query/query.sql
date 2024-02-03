@@ -37,8 +37,8 @@ INSERT INTO todos (
 
 -- name: UpdateTodo :exec
 UPDATE todos
-  SET title = $2, description = $3, completed = $4
-WHERE id = $1;
+  SET completed = $3
+WHERE id = $1 AND user_id = $2;
 
 -- name: DeleteTodo :exec
 DELETE FROM todos
