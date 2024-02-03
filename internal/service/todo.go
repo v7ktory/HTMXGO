@@ -43,8 +43,8 @@ func (s *TodoService) CreateTodo(ctx context.Context, title, description, email 
 	return nil
 }
 
-func (s *TodoService) GetTodos(ctx context.Context, id int32) ([]model.Todo, error) {
-	todosDB, err := s.Pdb.GetTodos(ctx, id)
+func (s *TodoService) GetTodos(ctx context.Context, userID int32) ([]model.Todo, error) {
+	todosDB, err := s.Pdb.GetTodos(ctx, userID)
 	if err != nil {
 		log.Println("Error getting todos:", err)
 		return nil, err
@@ -53,6 +53,7 @@ func (s *TodoService) GetTodos(ctx context.Context, id int32) ([]model.Todo, err
 	var todos []model.Todo
 	for _, t := range todosDB {
 		todo := model.Todo{
+			ID:          t.ID,
 			Title:       t.Title,
 			Description: t.Description.String,
 			Completed:   t.Completed.Bool,
@@ -63,12 +64,11 @@ func (s *TodoService) GetTodos(ctx context.Context, id int32) ([]model.Todo, err
 
 	return todos, nil
 }
+func (s *TodoService) DeleteTodo(ctx context.Context, userID, todoID int32) error {
+	err := s.Pdb.DeleteTodo(ctx, postgresdb.DeleteTodoParams{
+		UserID: userID,
+		ID:     todoID,
+	})
 
-func (s *TodoService) DeleteTodo(ctx context.Context, id int32) error {
-	err := s.Pdb.DeleteTodo(ctx, id)
-	if err != nil {
-		log.Println("Error deleting todo:", err)
-		return err
-	}
-	return nil
+	return err
 }

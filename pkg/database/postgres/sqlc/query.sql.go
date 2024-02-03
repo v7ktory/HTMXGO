@@ -75,11 +75,16 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 
 const deleteTodo = `-- name: DeleteTodo :exec
 DELETE FROM todos
-WHERE id = $1
+WHERE id = $1 AND user_id = $2
 `
 
-func (q *Queries) DeleteTodo(ctx context.Context, id int32) error {
-	_, err := q.db.Exec(ctx, deleteTodo, id)
+type DeleteTodoParams struct {
+	ID     int32
+	UserID int32
+}
+
+func (q *Queries) DeleteTodo(ctx context.Context, arg DeleteTodoParams) error {
+	_, err := q.db.Exec(ctx, deleteTodo, arg.ID, arg.UserID)
 	return err
 }
 
@@ -93,13 +98,34 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	return err
 }
 
+const getTodo = `-- name: GetTodo :one
+SELECT id, title, description, completed, created_at, user_id
+FROM todos
+WHERE user_id = $1 LIMIT 1
+`
+
+func (q *Queries) GetTodo(ctx context.Context, userID int32) (Todo, error) {
+	row := q.db.QueryRow(ctx, getTodo, userID)
+	var i Todo
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Description,
+		&i.Completed,
+		&i.CreatedAt,
+		&i.UserID,
+	)
+	return i, err
+}
+
 const getTodos = `-- name: GetTodos :many
-SELECT title, description, completed, created_at
+SELECT id, title, description, completed, created_at
 FROM todos
 WHERE user_id = $1
 `
 
 type GetTodosRow struct {
+	ID          int32
 	Title       string
 	Description pgtype.Text
 	Completed   pgtype.Bool
@@ -116,6 +142,7 @@ func (q *Queries) GetTodos(ctx context.Context, userID int32) ([]GetTodosRow, er
 	for rows.Next() {
 		var i GetTodosRow
 		if err := rows.Scan(
+			&i.ID,
 			&i.Title,
 			&i.Description,
 			&i.Completed,

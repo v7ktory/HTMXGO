@@ -21,10 +21,9 @@ func NewSessionManager(rdb *redis.Client) *SessionManager {
 	}
 }
 
-func (s *SessionManager) GenerateSession(data model.UserSession) (string, error) {
+func (s *SessionManager) GenerateSession(ctx context.Context, data model.UserSession) (string, error) {
 	sessionID := uuid.NewString()
 	jsonData, _ := json.Marshal(data)
-	ctx := context.Background()
 	err := s.Rdb.Set(ctx, sessionID, string(jsonData), 24*time.Hour).Err()
 	if err != nil {
 		log.Println("Error setting session:", err)
@@ -33,8 +32,8 @@ func (s *SessionManager) GenerateSession(data model.UserSession) (string, error)
 	return sessionID, nil
 }
 
-func (s *SessionManager) GetSession(sessionID string) (*model.UserSession, error) {
-	data, err := s.Rdb.Get(context.Background(), sessionID).Result()
+func (s *SessionManager) GetSession(ctx context.Context, sessionID string) (*model.UserSession, error) {
+	data, err := s.Rdb.Get(ctx, sessionID).Result()
 	if err != nil {
 		log.Println("Error getting session:", err)
 		return nil, err

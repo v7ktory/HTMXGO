@@ -34,7 +34,7 @@ func (s *AuthService) Signup(ctx context.Context, user *model.User) (postgresdb.
 	}
 
 	// Create a new user in the database
-	u, err := s.Pdb.CreateUser(context.Background(), postgresdb.CreateUserParams{
+	u, err := s.Pdb.CreateUser(ctx, postgresdb.CreateUserParams{
 		Name:     user.Name,
 		Email:    user.Email,
 		Password: hashedPassword,
@@ -49,7 +49,7 @@ func (s *AuthService) Signup(ctx context.Context, user *model.User) (postgresdb.
 
 func (s *AuthService) Login(ctx context.Context, user *model.User) (string, error) {
 	// Retrieve user from the database
-	u, err := s.Pdb.GetUser(context.Background(), user.Email)
+	u, err := s.Pdb.GetUser(ctx, user.Email)
 	if err != nil {
 		log.Println("Error getting user:", err)
 		return "", err
@@ -77,7 +77,7 @@ func (s *AuthService) Login(ctx context.Context, user *model.User) (string, erro
 	}
 
 	// Set the user session in the Redis database with a 24-hour expiration
-	err = s.Rdb.Set(context.Background(), sessionID, string(jsonData), 24*time.Hour).Err()
+	err = s.Rdb.Set(ctx, sessionID, string(jsonData), 24*time.Hour).Err()
 	if err != nil {
 		log.Println("Error setting session:", err)
 		return "", err

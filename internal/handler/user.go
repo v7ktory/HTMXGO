@@ -16,6 +16,36 @@ const (
 	apiURL = "https://api.api-ninjas.com/v1/randomuser"
 )
 
+func (h *Handler) UserProfile(c *gin.Context) {
+	userSession := c.MustGet("userSession").(*model.UserSession)
+
+	// Render the profile template
+	c.HTML(http.StatusOK, "profile.html", gin.H{
+		"ID":    userSession.ID,
+		"Name":  userSession.Name,
+		"Email": userSession.Email,
+	})
+}
+
+// Get the information from session
+func (h *Handler) GetUserInfo(c *gin.Context) {
+	// Get the sessionID from the cookie
+	sessionID, err := c.Cookie("sessionID")
+	if err != nil || sessionID == "" {
+		handleError(c, "invalid or missing session cookie", http.StatusBadRequest)
+		return
+	}
+
+	// Get the user data from the session
+	user, err := h.SessionManager.GetSession(c, sessionID)
+	if err != nil {
+		handleError(c, "failed to get user session", http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
+
 // Get the information from ninja API
 func (h *Handler) UserInfo(c *gin.Context) {
 	// Create an HTTP client
@@ -81,23 +111,4 @@ func calculateAge(b string) int {
 		age--
 	}
 	return age
-}
-
-// Get the information from session
-func (h *Handler) GetUserInfo(c *gin.Context) {
-	// Get the sessionID from the cookie
-	sessionID, err := c.Cookie("sessionID")
-	if err != nil || sessionID == "" {
-		handleError(c, "invalid or missing session cookie", http.StatusBadRequest)
-		return
-	}
-
-	// Get the user data from the session
-	user, err := h.SessionManager.GetSession(sessionID)
-	if err != nil {
-		handleError(c, "failed to get user session", http.StatusInternalServerError)
-		return
-	}
-
-	c.JSON(http.StatusOK, user)
 }

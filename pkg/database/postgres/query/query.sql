@@ -18,8 +18,13 @@ INSERT INTO users (
   $1, $2, $3
 ) RETURNING *;
 
+-- name: GetTodo :one
+SELECT id, title, description, completed, created_at, user_id
+FROM todos
+WHERE user_id = $1 LIMIT 1;
+
 -- name: GetTodos :many
-SELECT title, description, completed, created_at
+SELECT id, title, description, completed, created_at
 FROM todos
 WHERE user_id = $1;
 
@@ -37,5 +42,5 @@ WHERE id = $1;
 
 -- name: DeleteTodo :exec
 DELETE FROM todos
-WHERE id = $1;
+WHERE id = $1 AND user_id = $2;
 

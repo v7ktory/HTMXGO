@@ -16,9 +16,9 @@ type Auth interface {
 
 type Todo interface {
 	CreateTodo(ctx context.Context, title, description, email string) error
-	GetTodos(ctx context.Context, id int32) ([]model.Todo, error)
+	GetTodos(ctx context.Context, userID int32) ([]model.Todo, error)
 	// UpdateTodo(title, description string, id int32, completed bool) error
-	DeleteTodo(ctx context.Context, id int32) error
+	DeleteTodo(ctx context.Context, userID, todoID int32) error
 }
 type Service struct {
 	Auth

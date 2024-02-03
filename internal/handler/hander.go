@@ -57,7 +57,7 @@ func (h *Handler) AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		userSession, err := h.SessionManager.GetSession(sessionID)
+		userSession, err := h.SessionManager.GetSession(c, sessionID)
 		if err != nil {
 			handleError(c, "failed to get user session", http.StatusUnauthorized)
 			c.Abort()
