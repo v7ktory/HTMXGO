@@ -1,0 +1,17 @@
+{{ define "profile_info" }}
+
+<div class="container mt-2 bg-gray-900 rounded-xl text-white p-4">
+        <h1 id="profile-title" class="text-2xl text-center">Профиль</h1>
+        <br>
+        <ul class="transition duration-300 ease-in-out transform hover:scale-105 list-none p-0 cursor-default">
+            <li class="text-lg border p-2 rounded-md mb-4 hover:border-blue-500 hover:bg-gray-800 transition duration-300">Имя: {{ .Name }} </li>
+          
+            <li class="text-lg border p-2 rounded-md mb-4 hover:border-blue-500 hover:bg-gray-800 transition duration-300">Почта: {{ .Email}} </li>
+
+            <li  class="text-lg border p-2 rounded-md mb-4 hover:border-blue-500 hover:bg-gray-800 transition duration-300">Выполненные TODO:{{ .Total}}</li>
+        </ul>
+        
+    <button id="profile-close" class="absolute top-2 right-2 text-gray-400">x</button>
+</div>
+
+{{ end }}

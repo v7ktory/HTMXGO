@@ -15,14 +15,14 @@
             <div class="absolute right-5 z-10">
 
                 <button 
-                hx-confirm="Отметить как выполненное?" 
+                hx-confirm="Вы действительно хотите  отметить {{ .Title }} как выполненное?" 
                 hx-patch="/profile/update-todo/{{ .ID }}"
                 hx-target="closest li"
                 hx-swap="outerHTML swap:1s"
                 class="border hover:bg-green-700 transition duration-300 ease-in-out border-green-800 bg-green-800 px-4 rounded-lg shadow-md mr-1">Выполнить</button>
 
                 <button 
-                hx-confirm="Удалить эту TODO?" 
+                hx-confirm="Вы действительно хотите удалить {{ .Title }}?" 
                 hx-delete="/profile/delete-todo/{{ .ID }}"
                 hx-target="closest li" 
                 hx-swap="outerHTML swap:1s"

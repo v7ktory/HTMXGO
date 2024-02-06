@@ -17,33 +17,47 @@ const (
 )
 
 func (h *Handler) UserProfile(c *gin.Context) {
-	userSession := c.MustGet("userSession").(*model.UserSession)
+	cookie, err := c.Cookie("sessionID")
+	if err != nil {
+		handleError(c, "failed to get session", http.StatusBadRequest)
+		return
+	}
 
+	s, err := h.SessionManager.GetSession(c, cookie)
+	if err != nil {
+		handleError(c, "failed to get session", http.StatusBadRequest)
+		return
+	}
+	todos, err := h.Service.GetTodos(c, s.ID)
+	if err != nil {
+		handleError(c, "failed to get todos", http.StatusBadRequest)
+		return
+	}
+
+	var todoCompleted []model.TodoInfo
+	for _, t := range todos {
+		TodoInfo := model.TodoInfo{
+			Completed: t.Completed,
+		}
+		todoCompleted = append(todoCompleted, TodoInfo)
+	}
 	// Render the profile template
 	c.HTML(http.StatusOK, "profile.html", gin.H{
-		"ID":    userSession.ID,
-		"Name":  userSession.Name,
-		"Email": userSession.Email,
+		"ID":    s.ID,
+		"Name":  s.Name,
+		"Email": s.Email,
+		"Total": sumCompleted(todoCompleted),
 	})
 }
 
-// Get the information from session
-func (h *Handler) GetUserInfo(c *gin.Context) {
-	// Get the sessionID from the cookie
-	sessionID, err := c.Cookie("sessionID")
-	if err != nil || sessionID == "" {
-		handleError(c, "invalid or missing session cookie", http.StatusBadRequest)
-		return
+func sumCompleted(todos []model.TodoInfo) int {
+	totalCompleted := 0
+	for _, todo := range todos {
+		if todo.Completed {
+			totalCompleted++
+		}
 	}
-
-	// Get the user data from the session
-	user, err := h.SessionManager.GetSession(c, sessionID)
-	if err != nil {
-		handleError(c, "failed to get user session", http.StatusInternalServerError)
-		return
-	}
-
-	c.JSON(http.StatusOK, user)
+	return totalCompleted
 }
 
 // Get the information from ninja API

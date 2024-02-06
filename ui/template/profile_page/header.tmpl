@@ -5,7 +5,7 @@
         <h2 class="text-xl font-semibold italic animate-pulse-slow">{{ .Name }}</h2>
     </div>
     <div class="flex items-center space-x-4">
-        <a href="#" class="hover:text-gray-300">Мой профиль</a>
+        <a id="profileBtn" href="#" class="hover:text-gray-300">Мой профиль</a>
         <a href="#" id="signoutBtn" class="bg-blue-800 text-white hover:bg-blue-700 py-2 px-4 rounded-full transition duration-300" hx-post="/auth/signout">Выйти</a>
     </div>
 </header>

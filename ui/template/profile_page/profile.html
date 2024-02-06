@@ -15,6 +15,12 @@
    </div>
    <!-- Header -->
 
+   <!-- Profile Info -->
+   <div id="profile-info" class="container mx-auto size-72 absolute right-48">
+    {{ template "profile_info" . }}
+   </div>
+   <!-- Profile Info -->
+
    <!-- Post -->
    <div class="container mx-auto">
     {{ template "profile_todo" . }}
@@ -32,5 +38,6 @@
     {{ template "profile_footer" . }}
    </div>
    <!-- Footer -->
+   <script src="/ui/static/window_profile.js"></script>
 </body>
 </html>

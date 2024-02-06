@@ -40,7 +40,6 @@ func (h *Handler) InitRoute() *gin.Engine {
 	authenticated := router.Group("/profile", h.AuthMiddleware())
 	{
 		authenticated.GET("/my", h.UserProfile)
-		authenticated.GET("/info", h.GetUserInfo)
 		authenticated.POST("/add-todo", h.AddTodo)
 		authenticated.GET("/todo-info", h.GetTodos)
 		authenticated.PATCH("/update-todo/:id", h.UpdateTodo)
