@@ -101,11 +101,16 @@ func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 const getTodo = `-- name: GetTodo :one
 SELECT id, title, description, completed, created_at, user_id
 FROM todos
-WHERE user_id = $1 LIMIT 1
+WHERE user_id = $1 AND id = $2 LIMIT 1
 `
 
-func (q *Queries) GetTodo(ctx context.Context, userID int32) (Todo, error) {
-	row := q.db.QueryRow(ctx, getTodo, userID)
+type GetTodoParams struct {
+	UserID int32
+	ID     int32
+}
+
+func (q *Queries) GetTodo(ctx context.Context, arg GetTodoParams) (Todo, error) {
+	row := q.db.QueryRow(ctx, getTodo, arg.UserID, arg.ID)
 	var i Todo
 	err := row.Scan(
 		&i.ID,

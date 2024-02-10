@@ -65,6 +65,24 @@ func (s *TodoService) GetTodos(ctx context.Context, userID int32) ([]model.Todo,
 	return todos, nil
 }
 
+func (s *TodoService) GetTodo(ctx context.Context, userID, todoID int32) (model.Todo, error) {
+	todo, err := s.Pdb.GetTodo(ctx, postgresdb.GetTodoParams{
+		UserID: userID,
+		ID:     todoID,
+	})
+	if err != nil {
+		log.Println("Error getting todo:", err)
+		return model.Todo{}, err
+	}
+
+	return model.Todo{
+		ID:          todo.ID,
+		Title:       todo.Title,
+		Description: todo.Description.String,
+		Completed:   todo.Completed.Bool,
+		CreatedAt:   todo.CreatedAt.Time,
+	}, nil
+}
 func (s *TodoService) UpdateTodo(ctx context.Context, userID, todoID int32) error {
 	err := s.Pdb.UpdateTodo(ctx, postgresdb.UpdateTodoParams{
 		Completed: pgtype.Bool{Bool: true, Valid: true},

@@ -21,7 +21,7 @@ INSERT INTO users (
 -- name: GetTodo :one
 SELECT id, title, description, completed, created_at, user_id
 FROM todos
-WHERE user_id = $1 LIMIT 1;
+WHERE user_id = $1 AND id = $2 LIMIT 1;
 
 -- name: GetTodos :many
 SELECT id, title, description, completed, created_at

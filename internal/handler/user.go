@@ -37,10 +37,12 @@ func (h *Handler) UserProfile(c *gin.Context) {
 	var todoCompleted []model.TodoInfo
 	for _, t := range todos {
 		TodoInfo := model.TodoInfo{
+			ID:        t.ID,
 			Completed: t.Completed,
 		}
 		todoCompleted = append(todoCompleted, TodoInfo)
 	}
+
 	// Render the profile template
 	c.HTML(http.StatusOK, "profile.html", gin.H{
 		"ID":    s.ID,
